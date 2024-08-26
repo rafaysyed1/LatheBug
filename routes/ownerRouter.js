@@ -14,15 +14,16 @@ if (process.env.NODE_ENV === "development") {
 
         let createdOwner = await ownerModel.create({
             fullName,
-            email ,
+            email,
             password,
         })
         res.status(201).send(createdOwner);
 
     })
 }
-router.get("/", function (req, res) {
-    res.send("Hey owners saying it!")
+router.get("/admin", function (req, res) {
+    let success = req.flash("success");
+    res.render("createproducts",{success});
 });
 
 

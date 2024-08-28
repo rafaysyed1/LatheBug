@@ -24,7 +24,8 @@ module.exports.registerUser = async function (req, res) {
 
                     let token = generateToken(user);
                     res.cookie("Token", token);
-                    res.send("User created successfully");
+                    req.flash("success","User created successfully")
+                    res.redirect("/");
                 }
             })
         })
@@ -60,6 +61,6 @@ module.exports.loginUser = async function (req, res) {
 }
 
 module.exports.logout = function (req,res) {
-    res.cookies("token"," ");
+    res.cookie("token"," ");
     res.redirect("/")
 }

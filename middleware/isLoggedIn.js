@@ -13,7 +13,7 @@ module.exports = async function (req,res,next) {
         req.user = user;
         next()
     } catch (error) {
-        req.flash("error","Something went wrong");
+        req.flash("error","Please login first to access this route");
         res.redirect("/");
     }
 }

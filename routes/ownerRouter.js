@@ -40,34 +40,37 @@ router.get("/admin",isOwner, function (req, res) {
     res.render("createproducts",{success,error});
 });
 
-router.get("/login",async function (req,res) {
-   try {
-
-    res.render("owner-login",{Owner:false});
-    let {email,password } = req.body;
-    let owner = await ownerModel.findOne({email : email});
-    if(!owner){
-        req.flash("error","Inccorrect Email or Password!");
+router.get("/login", async function(req, res) {
+    try {
+        res.render("owner-login", { Owner: false,loggedIn:false });
+    } catch (error) {
+        req.flash("error", error.message);
         res.redirect("/");
     }
-    bcrypt.compare(password, user.password, function (err, result) {
-        if (result) {
-            req.flash("success","Welcome Back!");
-            return res.redirect("/owner/admin");
-        } else {
-            req.flash("error","Incorrect email or password");
-            return res.redirect("/");
-           
-        }
-        
-    })
-   } catch (error) {
-      req.flash("error",error.message);
-   }
-    
+});
 
-    
-})
+router.post("/login", async function(req, res) {
+    try {
+        let { email, password } = req.body;
+        let owner = await ownerModel.findOne({ email: email });
+        if (!owner) {
+            req.flash("error", "Incorrect Email or Password!");
+            return res.redirect("/");
+        }
+        bcrypt.compare(password, owner.password, function(err, result) {
+            if (result) {
+                req.flash("success", "Welcome Back!");
+                return res.redirect("/owner/admin");
+            } else {
+                req.flash("error", "Incorrect email or password");
+                return res.redirect("/");
+            }
+        });
+    } catch (error) {
+        req.flash("error", error.message);
+        res.redirect("/");
+    }
+});
 
 
 module.exports = router;

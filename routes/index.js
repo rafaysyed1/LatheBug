@@ -5,17 +5,18 @@ const productModel = require('../models/productModel');
 const userModel = require('../models/userModel');
 router.get("/",function(req,res){
     let error = req.flash("error");
-    res.render("index",{error,loggedIn : false});
+    res.render("index",{error,loggedIn : false,Owner:false});
 });
 
 router.get("/shop",async function (req,res) {
    let products =  await productModel.find();
    let error = req.flash("error");
    let success = req.flash("success");
-    res.render("shop",{products,success,error});
+    res.render("shop",{products,success,error,loggedIn:false,Owner:false});
 });
 
-router.get("/addtocart/:id", isLoggedIn, async function (req, res) {
+router.get("/addtocart/:id",isLoggedIn, async function (req, res) {
+   try {
     let user = await userModel.findOne({ email: req.user.email });
     let productId = req.params.id;
 
@@ -32,6 +33,10 @@ router.get("/addtocart/:id", isLoggedIn, async function (req, res) {
     await user.save();
     req.flash("success", "Product added to cart!");
     res.redirect("/shop");
+   } catch (error) {
+    req.flash("error","Something went wrong!");
+    res.redirect("/shop");
+   }
 });
 
 

@@ -11,15 +11,23 @@
 
 <body class="font-['helvetica_now_display']">
     <nav class="w-full flex justify-between px-5 py-3">
-        <h3 class="text-xl">LatheBug</h3>
-        <% var loggedIn=typeof loggedIn !=="undefined" ? loggedIn:true %>
-            <% if(loggedIn){ %>
-                <div class="flex gap-5">
-                    <a href="/shop">Shop</a>
-                    <a href="/cart">Cart</a>
-                    <a href="">My Account</a>
-                    <a class="text-red-500" href="/user/logout">Logout</a>
-                </div>
-                <% } %>
+        <h3 class="text-xl"><a href="/">LatheBug</a></h3>
+        
+        <% 
+            var loggedIn = typeof loggedIn !== "undefined" ? loggedIn : true; 
+            var Owner = typeof Owner !== "undefined" ? Owner : true; 
+            console.log("loggedIn:",loggedIn, "Owner:", Owner);
+        %>
 
+        <div class="flex gap-5">
+            <a href="/shop">Shop</a>
+            <% if (loggedIn || Owner) { %>
+                <a href="/cart">Cart</a>
+                <a href="/account">My Account</a>
+                <a class="text-red-500" href="/user/logout">Logout</a>
+            <% } %>
+        </div>
     </nav>
+</body>
+
+</html>

@@ -3,7 +3,7 @@ const router = express.Router();
 const upload = require("../config/multerConfig");
 const productModel = require("../models/productModel");
 
-router.post("/create", upload.single("image"), async function (req, res) {
+router.post("/create",upload.single("image"), async function (req, res) {
  try {
     let { productName,
         price,

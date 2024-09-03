@@ -1,8 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const isOwner = require("../middleware/isOwner");
 const ownerModel = require("../models/ownerModel");
-//Only in development mode 
+const bcrypt = require("bcrypt");
+const { generateToken } = require('../utils/generateToken');
+const isOwner = require("../middleware/isOwner");
+
+// Only in development mode 
 if (process.env.NODE_ENV === "development") {
     router.post("/create", async (req, res) => {
         let owners = await ownerModel.find();
@@ -25,6 +28,11 @@ if (process.env.NODE_ENV === "development") {
                         password: hash,
                     });
 
+                    let token = generateToken(owner);
+
+                    // Setting a signed cookie
+                    res.cookie("ownerToken", token, { signed: true, httpOnly: true });
+
                     res.status(201).send(owner);
                 } catch (error) {
                     res.status(500).send(error.message);
@@ -34,43 +42,73 @@ if (process.env.NODE_ENV === "development") {
     });
 }
 
+
+
 router.get("/admin",isOwner, function (req, res) {
     let success = req.flash("success");
     let error = req.flash("error");
-    res.render("createproducts",{success,error});
+    res.render("createproducts", { success, error });
 });
 
-router.get("/login", async function(req, res) {
+router.get("/login",async function (req, res) {
     try {
-        res.render("owner-login", { Owner: false,loggedIn:false });
+        res.render("owner-login", { Owner: false, loggedIn: false });
     } catch (error) {
         req.flash("error", error.message);
         res.redirect("/");
     }
 });
 
-router.post("/login", async function(req, res) {
+
+router.post("/login", async function (req, res) {
     try {
         let { email, password } = req.body;
-        let owner = await ownerModel.findOne({ email: email });
+        let owner = await ownerModel.findOne({ email });
+
         if (!owner) {
             req.flash("error", "Incorrect Email or Password!");
-            return res.redirect("/");
+            console.log("Owner not found.");
+            return res.redirect("/owner/login");
         }
-        bcrypt.compare(password, owner.password, function(err, result) {
+
+        bcrypt.compare(password, owner.password, function (err, result) {
+            if (err) {
+                req.flash("error", "An error occurred during authentication.");
+                console.log("Error during password comparison:", err);
+                return res.redirect("/owner/login");
+            }
+
             if (result) {
-                req.flash("success", "Welcome Back!");
+                let token = generateToken(owner);
+
+                // Setting a signed cookie
+                res.cookie("ownerToken", token, { signed: true, httpOnly: true });
+
+                console.log("Login successful. Token set:", token);
+                req.flash("success", "Welcome Back Admin!");
                 return res.redirect("/owner/admin");
             } else {
-                req.flash("error", "Incorrect email or password");
-                return res.redirect("/");
+                req.flash("error", "Incorrect email or password.");
+                console.log("Password did not match.");
+                return res.redirect("/owner/login");
             }
         });
+
     } catch (error) {
+        console.error("Login error:", error);
         req.flash("error", error.message);
-        res.redirect("/");
+        res.redirect("/owner/login");
     }
 });
+
+
+router.post("/logout",function (req, res)
+{
+    // Clearing the signed cookie by setting its value to an empty string
+    res.cookie("ownerToken", "", { signed: true, httpOnly: true, maxAge: 0 });
+    res.redirect("/owner/login");
+}
+) ;
 
 
 module.exports = router;

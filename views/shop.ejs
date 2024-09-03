@@ -17,8 +17,8 @@
                     <div class="w-[25%] flex h-screen flex-col items-start">
                         <div class="flex items-center gap-2">
                             <h3>sort by</h3>
-                            <form action="/shop">
-                                <select class="border-[1px] px-2 py-1" name="sortby" id="">
+                            <form action="/shop" method="get">
+                                <select class="border-[1px] px-2 py-1" name="sortby" onchange="this.form.submit()">
                                     <option value="popular">Popular</option>
                                     <option value="newest">Newest</option>
                                 </select>

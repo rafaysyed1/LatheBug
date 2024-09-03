@@ -1,27 +1,29 @@
+const jwt = require('jsonwebtoken');
 const ownerModel = require("../models/ownerModel");
 
-const checkOwner = async (req, res, next) => {
+const isOwner = async (req, res, next) => {
     try {
-        // Check if the user is logged in
-        if (!req.user) {
+        let token = req.signedCookies.ownerToken;
+        if (!token) {
             req.flash("error", "Please log in to continue.");
             return res.redirect("/owner/login");
         }
 
-        // Find the only owner in the database
-        const owner = await ownerModel.findOne();
+        // Verify the token and get the owner's email
+        let decoded = jwt.verify(token, process.env.JWT_KEY);
+        let owner = await ownerModel.findOne({ email: decoded.email });
 
-        // Check if the logged-in user is the owner
-        if (req.user.email === owner.email) {
-            next(); // User is the owner, proceed to the next middleware or route handler
-        } else {
-            req.flash("error", "Access denied! Only the owner admin can create products.");
-            return res.redirect("/");
+        if (!owner) {
+            req.flash("error", "Invalid token.");
+            return res.redirect("/owner/login");
         }
+
+        req.owner = owner;  
+        next();
     } catch (error) {
         req.flash("error", "Access denied!");
         return res.redirect("/owner/login");
     }
 };
 
-module.exports = checkOwner;
+module.exports = isOwner;

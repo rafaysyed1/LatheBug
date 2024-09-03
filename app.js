@@ -22,7 +22,7 @@ app.use(expressSession({
 }))
 app.use(flash());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
+app.use(cookieParser(process.env.COOKIE_PARSER_SECRET));
 app.use(express.static(path.join(__dirname, "public")));
 app.set("view engine", 'ejs');
 app.set('views', path.join(__dirname, 'views'));

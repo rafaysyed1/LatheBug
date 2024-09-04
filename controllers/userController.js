@@ -63,7 +63,7 @@ module.exports.loginUser = async function (req, res) {
 };
 
 module.exports.logout = function (req, res) {
-    // Clearing the signed cookie by setting its value to an empty string
-    res.cookie("token", "", { signed: true, httpOnly: true, maxAge: 0 });
+    // Clearing the signed cookies by setting their values to an empty string
+    res.cookie("token", "", { signed: true, httpOnly: true, maxAge: 0 });    
     res.redirect("/");
 };

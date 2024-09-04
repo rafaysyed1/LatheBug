@@ -42,9 +42,13 @@ if (process.env.NODE_ENV === "development") {
     });
 }
 
+router.get("/admin",isOwner,function (req,res) {
+    let success = req.flash("success");
+    let error = req.flash("error");
+    res.render("admin", { success, error });
+})
 
-
-router.get("/admin",isOwner, function (req, res) {
+router.get("/create_product",isOwner, function (req, res) {
     let success = req.flash("success");
     let error = req.flash("error");
     res.render("createproducts", { success, error });
@@ -52,7 +56,7 @@ router.get("/admin",isOwner, function (req, res) {
 
 router.get("/login",async function (req, res) {
     try {
-        res.render("owner-login", { Owner: false, loggedIn: false });
+        res.render("owner-login", { Owner: false });
     } catch (error) {
         req.flash("error", error.message);
         res.redirect("/");
@@ -67,14 +71,12 @@ router.post("/login", async function (req, res) {
 
         if (!owner) {
             req.flash("error", "Incorrect Email or Password!");
-            console.log("Owner not found.");
             return res.redirect("/owner/login");
         }
 
         bcrypt.compare(password, owner.password, function (err, result) {
             if (err) {
                 req.flash("error", "An error occurred during authentication.");
-                console.log("Error during password comparison:", err);
                 return res.redirect("/owner/login");
             }
 
@@ -102,13 +104,11 @@ router.post("/login", async function (req, res) {
 });
 
 
-router.post("/logout",function (req, res)
-{
-    // Clearing the signed cookie by setting its value to an empty string
+router.get("/logout", function (req, res) {
     res.cookie("ownerToken", "", { signed: true, httpOnly: true, maxAge: 0 });
-    res.redirect("/owner/login");
-}
-) ;
+    res.redirect("/owner/admin");
+});
+
 
 
 module.exports = router;

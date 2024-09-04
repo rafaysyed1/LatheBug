@@ -5,7 +5,6 @@ const isOwner = async (req, res, next) => {
     try {
         let token = req.signedCookies.ownerToken;
         if (!token) {
-            req.flash("error", "Please log in to continue.");
             return res.redirect("/owner/login");
         }
 

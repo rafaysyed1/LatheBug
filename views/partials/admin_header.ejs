@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LatheBug</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="font-['helvetica_now_display']">
+    <nav class="w-full flex justify-between px-5 py-3 bg-gray-800 text-white">
+        <h3 class="text-xl"><a href="/owner/admin">Admin Dashboard</a></h3>
+    
+        <% 
+            var Owner = typeof Owner !== "undefined" ? Owner : true; 
+        %>
+    
+        <div class="flex gap-5">
+
+            <% if (Owner) { %>
+                <a href="/admin/manage-users" class="">Manage Users</a>
+                <a href="/admin/manage-products">Manage Products</a>
+                <a href="/admin/settings">Settings</a>
+                <a class="text-red-500" href="/owner/logout">Logout</a>
+            <% } else { %>
+                <a href="/owner/login">Admin Login</a>
+            <% } %>
+        </div>
+    </nav>
+    
+</body>
+
+</html>
